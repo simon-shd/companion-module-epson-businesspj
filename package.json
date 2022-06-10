@@ -13,6 +13,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "urllib": "^2.38.0"
+  },
   "author": "Arthur Penner <arthur.penner@yahoo.de>",
   "license": "MIT"
 }

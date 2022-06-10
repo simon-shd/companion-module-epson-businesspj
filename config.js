@@ -5,20 +5,38 @@ module.exports = {
             {
                 type: 'text',
                 id: 'info',
-                width: 12,
                 label: 'Information',
+                width: 12,
                 value: 'This module is for Epson Business projectors'
             }, {
                 type: 'textinput',
                 id: 'url',
                 label: 'Projector URL',
-                width: 10,
+                width: 6,
                 regex: self.REGEX_IP
             }, {
+                type: 'textinput',
+                id: 'password',
+                label: 'Web Control Password',
+                width: 6,
+                default: 'admin'
+            }, {
                 type: 'checkbox',
-                label: 'HTTPS Connection',
                 id: 'https',
+                label: 'HTTPS Connection',
+                width: 12,
                 default: false
+            }, {
+                type: 'dropdown',
+                id: 'firmware',
+                label: 'Firmware',
+                width: 12,
+                choices: [
+                    { id: 1, label: '< v3'},
+                    { id: 2, label: 'v3'},
+                    { id: 3, label: '> v3'},
+                ],
+                default: 1
             }
         ]
     }
