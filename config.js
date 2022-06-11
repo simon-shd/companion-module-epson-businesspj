@@ -1,4 +1,10 @@
 module.exports = {
+    FIRMWARE_V: {
+        vBefore3: 1,
+        v3: 2,
+        vAfter3: 3,
+    },
+
 
     getConfigFields(self) {
         return [
@@ -32,9 +38,9 @@ module.exports = {
                 label: 'Firmware',
                 width: 12,
                 choices: [
-                    { id: 1, label: '< v3'},
-                    { id: 2, label: 'v3'},
-                    { id: 3, label: '> v3'},
+                    { id: this.FIRMWARE_V.vBefore3, label: '< v3'},
+                    { id: this.FIRMWARE_V.v3, label: 'v3'},
+                    { id: this.FIRMWARE_V.vAfter3, label: '> v3'},
                 ],
                 default: 1
             }

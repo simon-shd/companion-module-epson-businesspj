@@ -54,7 +54,7 @@ instance.prototype.action = function (action) {
 	const url       = "http" + (self.config.https ? "s" : "") + "://" + self.config.url
     
     switch (self.config.firmware) {
-        case 1: // FW pre-v3.0
+        case config.FIRMWARE_V.vBefore3: // FW pre-v3.0
             const timestamp = new Date().getTime()
 
             headers = {
@@ -89,7 +89,7 @@ instance.prototype.action = function (action) {
                 }
             }, headers);
             break
-        case 2: // FW around v3.0, requires HTTP basic auth
+        case config.FIRMWARE_V.v3: // FW around v3.0, requires HTTP basic auth
             headers = {
                 'Referer': url + '/cgi-bin/webconf',
             }
@@ -118,7 +118,7 @@ instance.prototype.action = function (action) {
                 }
             }, headers, options)
             break
-        case 3: // FW aorund v4
+        case config.FIRMWARE_V.vAfter3: // FW aorund v4
 
             cmdArray = actions.getAction(action)
             // ESCVP21 API expects array of commands, formed as objects each with
