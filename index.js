@@ -46,6 +46,7 @@ instance.prototype.actions = function (system) {
 
 instance.prototype.action = function (action) {
 	var self        = this
+    var cmdArray    = []
 	var path        = ""
 	var cmd         = ""
     var headers     = {}
@@ -68,7 +69,11 @@ instance.prototype.action = function (action) {
                 'Accept-Language': 'de,en;q=0.9'
             };
         
-            path = actions.getAction(action)
+            cmdArray = actions.getAction(action)
+            path = cmdArray.map((val) => {
+                return val.name + "=" + val.value
+            }).join('&')
+
             cmd = url + "/cgi-bin/directsend?" + path + "&_=" + timestamp;
         
             system.emit('log', 'Epson PJ', 'debug', 'FW<3 Action: ' + action.action);
@@ -91,10 +96,13 @@ instance.prototype.action = function (action) {
 
             options = {
                 user: 'EPSONWEB',
-                password: self.config.password | 'admin'
+                password: self.config.password
             }
 
-            path = actions.getAction(action)
+            cmdArray = actions.getAction(action)
+            path = cmdArray.map((val) => {
+                return val.name + "=" + val.value
+            }).join('&')
             cmd = url + "/cgi-bin/directsend?" + path
         
             system.emit('log', 'Epson PJ', 'debug', 'FW3 Action: ' + action.action)
@@ -112,17 +120,17 @@ instance.prototype.action = function (action) {
             break
         case 3: // FW aorund v4
 
-            path = actions.getAction(action)
-            let fadeIn = path.split('&')[0]
-            let fadeOut = path.split('&')[1]
+            cmdArray = actions.getAction(action)
+            let _commands = cmdArray.map((val) => {
+                return {name: val.name, parameters: val.value}
+            })
             cmd = url + "/api/v05/escvp21"
+
             options = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 data: {
-                    commands: [
-                        {name: fadeIn.split('=')[0], parameters: [fadeIn.split('=')[1]]}
-                    ],
+                    commands: _commands,
                 },
                 digestAuth: 'EPSONAPI:'+ self.config.password,
             }
@@ -143,7 +151,6 @@ instance.prototype.action = function (action) {
             });
             break
     }
-
 
 }
 

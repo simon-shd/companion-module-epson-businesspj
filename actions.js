@@ -103,6 +103,28 @@ module.exports = {
               required: false
             }]
           },
+          'fadeInTime': {
+            label: 'Fade In Time for A/V Mute',
+            options: [{
+              type: 'number',
+              label: 'fade in time (0-10s)',
+              id: 'fadeIn',
+              min: 0,
+              max: 10,
+              required: false
+            }]
+          },
+          'fadeOutTime': {
+            label: 'Fade Out Time for A/V Mute',
+            options: [{
+              type: 'number',
+              label: 'fade out time (0-10s)',
+              id: 'fadeOut',
+              min: 0,
+              max: 10,
+              required: false
+            }]
+          },
           'testPattern': {
             label: 'Show Test Pattern',
             options: [
@@ -281,58 +303,69 @@ module.exports = {
   },
 
   getAction(action) {
+    // returns an array of objects with name, value
     var id = action.action
     var paramForAction = action.options ? Object.keys(action.options) : null
 
     switch (id) {
       case 'power':
         if (action.options[paramForAction[0]] == "ON") {
-          return "IMPWR=ON"
+          return [{name: "IMPWR", value: "ON"}]
         } else {
-          return "KEY=6C"
+          return [{name: "KEY", value: "6C"}]
         }
+        break
       case 'source':
-        return "SOURCE=" + action.options[paramForAction[0]]
+        return [{name: "SOURCE", value: action.options[paramForAction[0]]}]
       case 'audioVideoMute':
-        return "MUTE=" + action.options[paramForAction[0]]
+        return [{name: "MUTE", value: action.options[paramForAction[0]]}]
       case 'freeze':
-        return "FREEZE=" + action.options[paramForAction[0]]
+        return [{name: "FREEZE", value: action.options[paramForAction[0]]}]
       case 'brightness':
-        return "_OSD_IMLUMLEVEL=" + action.options[paramForAction[0]]
+        return [{name: "_OSD_IMLUMLEVEL", value: action.options[paramForAction[0]]}]
       case 'fadeTime':
-        const fadeInTime = action.options[paramForAction[0]] * 20
-        const fadeOutTime = action.options[paramForAction[1]] * 20
+        const fadeInCmd = (action.options[paramForAction[0]] !== undefined) ? this.getAction({action: 'fadeInTime', options: {'fadeIn': action.options[paramForAction[0]]}}) : false
+        const fadeOutCmd = (action.options[paramForAction[1]] !== undefined) ? this.getAction({action: 'fadeOutTime', options: {'fadeOut': action.options[paramForAction[0]]}}) : false
+        let returnArray = []
 
-        if (fadeInTime) {
-          return "FADEIN=" + fadeInTime + (fadeOutTime ? ("&FADEOUT=" + fadeOutTime) : "")
-        } else if (fadeOutTime) {
-          return "FADEOUT=" + fadeOutTime
-        } else {
-          break;
+        if (fadeInCmd) {
+          returnArray.push(fadeInCmd[0])
+        } 
+        if (fadeOutCmd) {
+          returnArray.push(fadeOutCmd[0])
         }
+
+        if (returnArray.length !== 0) {
+            return returnArray
+        } 
+        return false
+      case 'fadeInTime':
+        return [{name: "FADEIN", value: action.options[paramForAction[0]]*20}]
+      case 'fadeOutTime':
+        return [{name: "FADEOUT", value: action.options[paramForAction[0]]*20}]
       case 'testPattern':
-        return "TESTPATTERN=01%" + action.options[paramForAction[0]]
+        return [{name: "TESTPATTERN", value: "01%"+action.options[paramForAction[0]]}]
       case 'hideTestPattern':
-        return "TESTPATTERN=00"
+        return [{name: "TESTPATTERN", value: "00"}]
       case 'loadLensPosition':
-        return "POPLP=" + action.options[paramForAction[0]]
+        return [{name: "POPLP", value: action.options[paramForAction[0]]}]
       case 'saveLensPosition':
-        return "PUSHLP=" + action.options[paramForAction[0]]
+        return [{name: "PUSHLP", value: action.options[paramForAction[0]]}]
       case 'focusAction':
-        return "FOCUS=" + action.options[paramForAction[0]]
+        return [{name: "FOCUS", value: action.options[paramForAction[0]]}]
       case 'zoomAction':
-        return "ZOOM=" + action.options[paramForAction[0]]
+        return [{name: "ZOOM", value: action.options[paramForAction[0]]}]
       case 'shiftAction':
         const shiftAction = action.options[paramForAction[0]]
         switch (shiftAction) {
           case '0':
-            return "LENS=INC"
+            return [{name: "LENS", value: "INC"}]
           case '1':
-            return "LENS=DEC"
+            return [{name: "LENS", value: "DEC"}]
           case '2':
-            return "HLENS=DEC"
+            return [{name: "HLENS", value: "DEC"}]
           case '3':
-            return "HLENS=INC"
+            return [{name: "HLENS", value: "INC"}]
         }
         break;
 
