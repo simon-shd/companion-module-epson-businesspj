@@ -121,8 +121,11 @@ instance.prototype.action = function (action) {
         case 3: // FW aorund v4
 
             cmdArray = actions.getAction(action)
+            // ESCVP21 API expects array of commands, formed as objects each with
+            // key 'name' as the command, value String
+            // key 'parameters' as an Array of parameters, value String
             let _commands = cmdArray.map((val) => {
-                return {name: val.name, parameters: val.value}
+                return {name: val.name, parameters: [val.value.toString()]}
             })
             cmd = url + "/api/v05/escvp21"
 
