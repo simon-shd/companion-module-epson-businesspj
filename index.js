@@ -71,7 +71,7 @@ instance.prototype.action = function (action) {
         
             cmdArray = actions.getAction(action)
             path = cmdArray.map((val) => {
-                return val.name + "=" + val.value
+                return val.name + "=" + val.parameters.join('+')
             }).join('&')
 
             cmd = url + "/cgi-bin/directsend?" + path + "&_=" + timestamp;
@@ -101,7 +101,7 @@ instance.prototype.action = function (action) {
 
             cmdArray = actions.getAction(action)
             path = cmdArray.map((val) => {
-                return val.name + "=" + val.value
+                return val.name + "=" + val.parameters.join('+')
             }).join('&')
             cmd = url + "/cgi-bin/directsend?" + path
         
@@ -124,9 +124,14 @@ instance.prototype.action = function (action) {
             // ESCVP21 API expects array of commands, formed as objects each with
             // key 'name' as the command, value String
             // key 'parameters' as an Array of parameters, value String
-            let _commands = cmdArray.map((val) => {
-                return {name: val.name, parameters: [val.value.toString()]}
+            let _commands = cmdArray.map(val => {
+                return {
+                    name: val.name, 
+                    parameters: val.parameters.map(param => {return param.toString()})
+                }
             })
+
+            // hardcoded using api v05 - not sure if there are others
             cmd = url + "/api/v05/escvp21"
 
             options = {
